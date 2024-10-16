@@ -27,13 +27,14 @@ const (
 var cat string
 
 func main() {
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+	
 	s, err := wish.NewServer(
 		wish.WithAddress(net.JoinHostPort(host, port)),
-		homeDir, err := os.UserHomeDir()
-		if err != nil {
-			fmt.Println("Error:", err)
-			return
-		}
 		wish.WithHostKeyPath(fmt.Sprintf("%s/.ssh/id_ed25519", homeDir)),
 		wish.WithMiddleware(
 			func(next ssh.Handler) ssh.Handler {
