@@ -29,7 +29,12 @@ var cat string
 func main() {
 	s, err := wish.NewServer(
 		wish.WithAddress(net.JoinHostPort(host, port)),
-		wish.WithHostKeyPath(".ssh/id_ed25519"),
+		homeDir, err := os.UserHomeDir()
+		if err != nil {
+			fmt.Println("Error:", err)
+			return
+		}
+		wish.WithHostKeyPath(fmt.Sprintf("%s/.ssh/id_ed25519", homeDir)),
 		wish.WithMiddleware(
 			func(next ssh.Handler) ssh.Handler {
 				return func(sess ssh.Session) {
@@ -42,7 +47,6 @@ func main() {
           if err != nil {
             log.Error("Could not stat motd.txt", "error", err)
           }
-          wish.Println(sess, fmt.Sprintf("circular's message of the day: (last updated %s)", fileInfo.ModTime().Truncate(time.Second)))
           wish.Println(sess, string(dat))
           next(sess)
 				}
